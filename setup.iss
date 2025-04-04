@@ -21,6 +21,8 @@ OutputBaseFilename=AppFlowyBundleSetup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+; Create the app directory if it doesn't exist
+DirExists=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -29,21 +31,30 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; AppFlowy
-Source: "AppFlowy.exe"; DestDir: "{app}"; Flags: ignoreversion
-; Ollama
-Source: "ollama.exe"; DestDir: "{app}"; Flags: ignoreversion
+; Ollama Setup
+Source: "app\OllamaSetup.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; AppFlowy Main Application
+Source: "app\AppFlowy.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; AppFlowy LAI
+Source: "app\AppFlowyLAI\AppFlowy_LAI.exe"; DestDir: "{app}\AppFlowyLAI"; Flags: ignoreversion
+
 ; AF Ollama Plugin
-Source: "af_ollama_plugins.exe"; DestDir: "{app}"; Flags: ignoreversion
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "app\AppFlowyLAI\_internal\af_ollama_plugin.exe"; DestDir: "{app}\AppFlowyLAI\_internal"; Flags: ignoreversion createallsubdirs
 
 [Icons]
 Name: "{group}\AppFlowy"; Filename: "{app}\AppFlowy.exe"
-Name: "{group}\Ollama"; Filename: "{app}\ollama.exe"
+Name: "{group}\AppFlowy LAI"; Filename: "{app}\AppFlowyLAI\AppFlowy_LAI.exe"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\AppFlowy"; Filename: "{app}\AppFlowy.exe"; Tasks: desktopicon
 
 [Run]
+; First install Ollama
+Filename: "{app}\OllamaSetup.exe"; Description: "Installing Ollama..."; Flags: waituntilterminated
+; Then launch AppFlowy
 Filename: "{app}\AppFlowy.exe"; Description: "{cm:LaunchProgram,AppFlowy}"; Flags: nowait postinstall skipifsilent
-Filename: "{app}\ollama.exe"; Description: "Start Ollama Service"; Flags: nowait postinstall skipifsilent runhidden
-Filename: "{app}\af_ollama_plugins.exe"; Description: "Initialize AF Ollama Plugin"; Flags: nowait postinstall skipifsilent runhidden
+; Launch AppFlowy LAI
+Filename: "{app}\AppFlowyLAI\AppFlowy_LAI.exe"; Description: "Launch AppFlowy LAI"; Flags: nowait postinstall skipifsilent
+; Initialize AF Ollama Plugin
+Filename: "{app}\AppFlowyLAI\_internal\af_ollama_plugin.exe"; Description: "Initialize AF Ollama Plugin"; Flags: nowait postinstall skipifsilent runhidden
